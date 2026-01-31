@@ -1,0 +1,18 @@
+# Telegram Bot
+python-telegram-bot==20.7
+
+# AI API клиенты
+openai==1.12.0  # Совместим с Groq, OpenRouter
+anthropic==0.18.1
+
+# База данных
+sqlalchemy==2.0.25
+
+# Веб-фреймворк
+fastapi==0.109.0
+uvicorn==0.27.0
+pydantic==2.5.3
+
+# Утилиты
+python-dotenv==1.0.0
+pytz==2024.1
