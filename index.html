@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EEKLERA - Валерия Колягина</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --accent-gold: #d4af37;
+            --accent-rose: #ff6b9d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            padding-bottom: 20px;
+        }
+
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, var(--accent-gold) 35px, var(--accent-gold) 36px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 100%;
+            padding: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(212, 175, 55, 0.1) 100%);
+            padding: 40px 20px 30px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #fff 50%, var(--accent-rose) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(212, 175, 55, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover::before,
+        .nav-btn:active::before {
+            left: 100%;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-btn-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            filter: grayscale(0.3);
+            transition: filter 0.3s;
+        }
+
+        .nav-btn:active .nav-btn-icon {
+            filter: grayscale(0);
+        }
+
+        .nav-btn-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .content-section {
+            display: none;
+            padding: 25px 20px;
+            animation: fadeIn 0.5s ease-in-out;
+            background: rgba(26, 26, 26, 0.5);
+            margin: 15px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-gold);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--accent-gold);
+        }
+
+        .bio-text {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .bio-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .skills-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .skill-item {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:active {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateX(5px);
+        }
+
+        .skill-title {
+            font-weight: 600;
+            color: var(--accent-gold);
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .skill-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .goals-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .goal-item {
+            background: rgba(255, 107, 157, 0.05);
+            border-left: 3px solid var(--accent-rose);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 0 12px 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .goal-item:active {
+            background: rgba(255, 107, 157, 0.1);
+            transform: translateX(5px);
+        }
+
+        .goal-item strong {
+            color: var(--accent-rose);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .contact-buttons {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(255, 107, 157, 0.1) 100%);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .contact-btn:active {
+            transform: scale(0.97);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .contact-btn-icon {
+            font-size: 1.5rem;
+        }
+
+        .back-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .back-btn:active {
+            background: var(--accent-gold);
+            color: var(--bg-primary);
+            transform: scale(0.95);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(255, 107, 157, 0.2) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .gallery-item:active::before {
+            transform: translateX(100%);
+        }
+
+        .gallery-item:active {
+            transform: scale(0.95);
+            border-color: var(--accent-gold);
+        }
+
+        .gallery-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">EEKLERA</div>
+            <div class="subtitle">Валерия Колягина</div>
+        </div>
+
+        <!-- Navigation -->
+        <div id="mainMenu" class="nav-buttons">
+            <div class="nav-btn" onclick="showSection('biography')">
+                <div class="nav-btn-icon">📖</div>
+                <div class="nav-btn-text">БИОГРАФИЯ</div>
+            </div>
+            <div class="nav-btn" onclick="showSection('skills')">
+                <div class="nav-btn-icon">🎭</div>
+                <div class="nav-btn-text">НАВЫКИ</div>
+            </div>
+            <div class="nav-btn" onclick="showSection('goals')">
+                <div class="nav-btn-icon">🎯</div>
+                <div class="nav-btn-text">ЦЕЛИ</div>
+            </div>
+            <div class="nav-btn" onclick="showSection('contacts')">
+                <div class="nav-btn-icon">📱</div>
+                <div class="nav-btn-text">КОНТАКТЫ</div>
+            </div>
+            <div class="nav-btn" onclick="showSection('gallery')">
+                <div class="nav-btn-icon">🖼️</div>
+                <div class="nav-btn-text">ГАЛЕРЕЯ</div>
+            </div>
+            <div class="nav-btn" onclick="openWebsite()">
+                <div class="nav-btn-icon">🌐</div>
+                <div class="nav-btn-text">ВЕБ-САЙТ</div>
+            </div>
+        </div>
+
+        <!-- Biography Section -->
+        <div id="biography" class="content-section">
+            <h2 class="section-title">Биография</h2>
+            <div class="bio-text">
+                <p><strong>Валерия Колягина (EEKLERA)</strong> — талантливая актриса и популярная стримерша, которая завоевала сердца зрителей своим харизматичным присутствием и профессионализмом.</p>
+            </div>
+            <div class="bio-text">
+                <p>Начав свой творческий путь в театральной студии, Валерия быстро нашла свой уникальный стиль, сочетающий классическую актёрскую школу с современными медиа-форматами.</p>
+            </div>
+            <div class="bio-text">
+                <p>Сегодня она успешно развивается как в традиционном актёрском искусстве, так и в цифровом пространстве, создавая интересный контент для своей аудитории и участвуя в различных творческих проектах.</p>
+            </div>
+            <button class="back-btn" onclick="showMenu()">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- Skills Section -->
+        <div id="skills" class="content-section">
+            <h2 class="section-title">Актёрские навыки</h2>
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <div class="skill-title">🎬 Кино и ТВ</div>
+                    <div class="skill-desc">Опыт работы в кино и на телевидении, умение работать с камерой</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-title">🎭 Театр</div>
+                    <div class="skill-desc">Театральная подготовка, работа с живой аудиторией</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-title">🎤 Озвучка</div>
+                    <div class="skill-desc">Профессиональная озвучка персонажей и рекламных роликов</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-title">📹 Стриминг</div>
+                    <div class="skill-desc">Создание развлекательного контента, взаимодействие с аудиторией</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-title">💃 Пластика</div>
+                    <div class="skill-desc">Хореография, сценическое движение</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-title">🗣️ Дикция</div>
+                    <div class="skill-desc">Отличная речевая подготовка, работа с текстом</div>
+                </div>
+            </div>
+            <button class="back-btn" onclick="showMenu()">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- Goals Section -->
+        <div id="goals" class="content-section">
+            <h2 class="section-title">Цели и достижения</h2>
+            <ul class="goals-list">
+                <li class="goal-item">
+                    <strong>🎯 Карьера в кино</strong>
+                    <span>Развитие актёрской карьеры, участие в крупных кинопроектах</span>
+                </li>
+                <li class="goal-item">
+                    <strong>📺 Развитие канала</strong>
+                    <span>Рост аудитории, создание качественного и интересного контента</span>
+                </li>
+                <li class="goal-item">
+                    <strong>🎓 Профессиональный рост</strong>
+                    <span>Постоянное обучение и совершенствование актёрского мастерства</span>
+                </li>
+                <li class="goal-item">
+                    <strong>🤝 Коллаборации</strong>
+                    <span>Сотрудничество с другими талантливыми артистами и создателями</span>
+                </li>
+                <li class="goal-item">
+                    <strong>🌟 Узнаваемость</strong>
+                    <span>Становление узнаваемым и уважаемым именем в индустрии</span>
+                </li>
+            </ul>
+            <button class="back-btn" onclick="showMenu()">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- Contacts Section -->
+        <div id="contacts" class="content-section">
+            <h2 class="section-title">Контакты</h2>
+            <div class="contact-buttons">
+                <a href="https://t.me/eeklera" class="contact-btn" target="_blank">
+                    <span class="contact-btn-icon">✈️</span>
+                    <span>Telegram канал</span>
+                </a>
+                <a href="https://instagram.com/eeklera" class="contact-btn" target="_blank">
+                    <span class="contact-btn-icon">📸</span>
+                    <span>Instagram</span>
+                </a>
+                <a href="https://vk.com/eeklera" class="contact-btn" target="_blank">
+                    <span class="contact-btn-icon">🔵</span>
+                    <span>ВКонтакте</span>
+                </a>
+                <a href="https://eeklera.ru" class="contact-btn" target="_blank">
+                    <span class="contact-btn-icon">🌐</span>
+                    <span>Официальный сайт</span>
+                </a>
+            </div>
+            <div class="bio-text" style="margin-top: 30px; text-align: center;">
+                <p>По вопросам сотрудничества обращайтесь через любой удобный канал связи</p>
+            </div>
+            <button class="back-btn" onclick="showMenu()">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- Gallery Section -->
+        <div id="gallery" class="content-section">
+            <h2 class="section-title">Галерея</h2>
+            <div class="gallery-placeholder">
+                <p>🖼️</p>
+                <p>Галерея скоро будет доступна</p>
+                <p style="font-size: 0.85rem; margin-top: 10px;">Здесь появятся фотографии из портфолио и творческих проектов</p>
+            </div>
+            <button class="back-btn" onclick="showMenu()">← НАЗАД В МЕНЮ</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp
+        let tg = window.Telegram.WebApp;
+        
+        // Expand the app to full height
+        tg.expand();
+        
+        // Set header color
+        tg.setHeaderColor('#0a0a0a');
+        
+        // Enable closing confirmation
+        tg.enableClosingConfirmation();
+
+        // Navigation functions
+        function showSection(sectionId) {
+            // Hide menu
+            document.getElementById('mainMenu').style.display = 'none';
+            
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Haptic feedback
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
+        }
+
+        function showMenu() {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show menu
+            document.getElementById('mainMenu').style.display = 'grid';
+            
+            // Haptic feedback
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
+        }
+
+        function openWebsite() {
+            tg.openLink('https://eeklera.ru');
+        }
+
+        // Handle back button
+        tg.BackButton.onClick(function() {
+            const activeSection = document.querySelector('.content-section.active');
+            if (activeSection) {
+                showMenu();
+            } else {
+                tg.close();
+            }
+        });
+
+        // Show back button when a section is active
+        const observer = new MutationObserver(function(mutations) {
+            const activeSection = document.querySelector('.content-section.active');
+            if (activeSection) {
+                tg.BackButton.show();
+            } else {
+                tg.BackButton.hide();
+            }
+        });
+
+        observer.observe(document.body, {
+            attributes: true,
+            subtree: true,
+            attributeFilter: ['class']
+        });
+
+        // Send ready event to Telegram
+        tg.ready();
+    </script>
+</body>
+</html>
